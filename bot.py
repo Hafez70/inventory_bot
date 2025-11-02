@@ -38,12 +38,9 @@ BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle /start command - show main menu."""
     keyboard = [
-        [InlineKeyboardButton(msg.BTN_CATEGORIES, callback_data='category_menu')],
-        [InlineKeyboardButton(msg.BTN_SUBCATEGORIES, callback_data='subcategory_menu')],
-        [InlineKeyboardButton(msg.BTN_BRANDS, callback_data='brand_menu')],
-        [InlineKeyboardButton(msg.BTN_MEASURE_TYPES, callback_data='measure_type_menu')],
         [InlineKeyboardButton(msg.BTN_ITEMS, callback_data='item_menu')],
-        [InlineKeyboardButton(msg.BTN_LOW_STOCK, callback_data='low_stock_list')]
+        [InlineKeyboardButton(msg.BTN_LOW_STOCK, callback_data='low_stock_list')],
+        [InlineKeyboardButton(msg.BTN_INITIAL_SETTINGS, callback_data='initial_settings_menu')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
@@ -55,16 +52,29 @@ async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     
     keyboard = [
-        [InlineKeyboardButton(msg.BTN_CATEGORIES, callback_data='category_menu')],
-        [InlineKeyboardButton(msg.BTN_SUBCATEGORIES, callback_data='subcategory_menu')],
-        [InlineKeyboardButton(msg.BTN_BRANDS, callback_data='brand_menu')],
-        [InlineKeyboardButton(msg.BTN_MEASURE_TYPES, callback_data='measure_type_menu')],
         [InlineKeyboardButton(msg.BTN_ITEMS, callback_data='item_menu')],
-        [InlineKeyboardButton(msg.BTN_LOW_STOCK, callback_data='low_stock_list')]
+        [InlineKeyboardButton(msg.BTN_LOW_STOCK, callback_data='low_stock_list')],
+        [InlineKeyboardButton(msg.BTN_INITIAL_SETTINGS, callback_data='initial_settings_menu')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
     await query.edit_message_text(msg.MAIN_MENU, reply_markup=reply_markup)
+
+async def initial_settings_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Show initial settings submenu."""
+    query = update.callback_query
+    await query.answer()
+    
+    keyboard = [
+        [InlineKeyboardButton(msg.BTN_CATEGORIES, callback_data='category_menu')],
+        [InlineKeyboardButton(msg.BTN_SUBCATEGORIES, callback_data='subcategory_menu')],
+        [InlineKeyboardButton(msg.BTN_BRANDS, callback_data='brand_menu')],
+        [InlineKeyboardButton(msg.BTN_MEASURE_TYPES, callback_data='measure_type_menu')],
+        [InlineKeyboardButton(msg.BTN_MAIN_MENU, callback_data='main_menu')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    await query.edit_message_text(msg.INITIAL_SETTINGS_MENU, reply_markup=reply_markup)
 
 async def handle_text_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle text messages based on user state."""
@@ -145,6 +155,8 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
     # Main menu
     if data == 'main_menu':
         await main_menu(update, context)
+    elif data == 'initial_settings_menu':
+        await initial_settings_menu(update, context)
     
     # Category handlers
     elif data == 'category_menu':
