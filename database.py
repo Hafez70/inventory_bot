@@ -507,7 +507,10 @@ def set_user_state(user_id, state, data=None):
     conn = get_connection()
     cursor = conn.cursor()
     import json
-    data_str = json.dumps(data) if data else None
+    # Always store data as JSON string, even if empty dict
+    if data is None:
+        data = {}
+    data_str = json.dumps(data)
     cursor.execute(
         'INSERT OR REPLACE INTO user_states (user_id, state, data) VALUES (?, ?, ?)',
         (user_id, state, data_str)
@@ -525,8 +528,9 @@ def get_user_state(user_id):
     if result:
         import json
         state, data = result
-        return state, json.loads(data) if data else None
-    return None, None
+        # Always return a dict, even if empty
+        return state, json.loads(data) if data else {}
+    return None, {}
 
 def clear_user_state(user_id):
     """Clear user state."""
