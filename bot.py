@@ -34,17 +34,25 @@ logger = logging.getLogger(__name__)
 
 # Bot token from environment
 BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+BOT_PASSWORD = os.getenv('BOT_PASSWORD', 'ciFarco@1213#3221')  # Default password
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Handle /start command - show main menu."""
-    keyboard = [
-        [InlineKeyboardButton(msg.BTN_ITEMS, callback_data='item_menu')],
-        [InlineKeyboardButton(msg.BTN_LOW_STOCK, callback_data='low_stock_list')],
-        [InlineKeyboardButton(msg.BTN_INITIAL_SETTINGS, callback_data='initial_settings_menu')]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    """Handle /start command - check authentication or show main menu."""
+    user_id = update.effective_user.id
     
-    await update.message.reply_text(msg.WELCOME_MESSAGE, reply_markup=reply_markup)
+    # Check if user is already authenticated
+    if db.is_user_authenticated(user_id):
+        keyboard = [
+            [InlineKeyboardButton(msg.BTN_ITEMS, callback_data='item_menu')],
+            [InlineKeyboardButton(msg.BTN_LOW_STOCK, callback_data='low_stock_list')],
+            [InlineKeyboardButton(msg.BTN_INITIAL_SETTINGS, callback_data='initial_settings_menu')]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await update.message.reply_text(msg.MAIN_MENU, reply_markup=reply_markup)
+    else:
+        # Ask for password
+        db.set_user_state(user_id, 'AWAITING_PASSWORD')
+        await update.message.reply_text(msg.AUTH_REQUEST)
 
 async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Show main menu."""
@@ -80,6 +88,40 @@ async def handle_text_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     """Handle text messages based on user state."""
     user_id = update.effective_user.id
     state, data = db.get_user_state(user_id)
+    
+    # Check for authentication state first
+    if state == 'AWAITING_PASSWORD':
+        password = update.message.text.strip()
+        if password == BOT_PASSWORD:
+            # Authenticate user
+            user = update.effective_user
+            db.authenticate_user(
+                user_id=user.id,
+                username=user.username,
+                first_name=user.first_name,
+                last_name=user.last_name
+            )
+            db.clear_user_state(user_id)
+            
+            # Show success message and main menu
+            keyboard = [
+                [InlineKeyboardButton(msg.BTN_ITEMS, callback_data='item_menu')],
+                [InlineKeyboardButton(msg.BTN_LOW_STOCK, callback_data='low_stock_list')],
+                [InlineKeyboardButton(msg.BTN_INITIAL_SETTINGS, callback_data='initial_settings_menu')]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            await update.message.reply_text(msg.AUTH_SUCCESS)
+            await update.message.reply_text(msg.MAIN_MENU, reply_markup=reply_markup)
+        else:
+            # Wrong password
+            await update.message.reply_text(msg.AUTH_FAILED)
+            await update.message.reply_text(msg.AUTH_REQUEST)
+        return
+    
+    # Check if user is authenticated for all other operations
+    if not db.is_user_authenticated(user_id):
+        await update.message.reply_text(msg.AUTH_REQUIRED)
+        return
     
     if state == 'category_create':
         await cat_handlers.category_create_handle_name(update, context)
@@ -133,6 +175,12 @@ async def handle_text_message(update: Update, context: ContextTypes.DEFAULT_TYPE
 async def handle_photo_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle photo messages based on user state."""
     user_id = update.effective_user.id
+    
+    # Check if user is authenticated
+    if not db.is_user_authenticated(user_id):
+        await update.message.reply_text(msg.AUTH_REQUIRED)
+        return
+    
     state, data = db.get_user_state(user_id)
     
     if state == 'item_create_images':
@@ -151,6 +199,13 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
     """Route callback queries to appropriate handlers."""
     query = update.callback_query
     data = query.data
+    user_id = update.effective_user.id
+    
+    # Check if user is authenticated
+    if not db.is_user_authenticated(user_id):
+        await query.answer()
+        await query.message.reply_text(msg.AUTH_REQUIRED)
+        return
     
     # Main menu
     if data == 'main_menu':

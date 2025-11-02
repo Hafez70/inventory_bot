@@ -71,6 +71,21 @@ def migrate():
             ''')
             needs_migration = True
         
+        # Check if authenticated_users table exists
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='authenticated_users'")
+        if not cursor.fetchone():
+            print("➕ Creating authenticated_users table...")
+            cursor.execute('''
+                CREATE TABLE authenticated_users (
+                    user_id INTEGER PRIMARY KEY,
+                    username TEXT,
+                    first_name TEXT,
+                    last_name TEXT,
+                    authenticated_at TEXT NOT NULL
+                )
+            ''')
+            needs_migration = True
+        
         if needs_migration:
             conn.commit()
             print("✅ Migration completed successfully!")

@@ -96,6 +96,17 @@ def init_database():
         )
     ''')
     
+    # Authenticated users table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS authenticated_users (
+            user_id INTEGER PRIMARY KEY,
+            username TEXT,
+            first_name TEXT,
+            last_name TEXT,
+            authenticated_at TEXT NOT NULL
+        )
+    ''')
+    
     conn.commit()
     conn.close()
     
@@ -539,6 +550,37 @@ def clear_user_state(user_id):
     cursor.execute('DELETE FROM user_states WHERE user_id = ?', (user_id,))
     conn.commit()
     conn.close()
+
+# Authentication management
+def is_user_authenticated(user_id):
+    """Check if user is authenticated."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT user_id FROM authenticated_users WHERE user_id = ?', (user_id,))
+    result = cursor.fetchone()
+    conn.close()
+    return result is not None
+
+def authenticate_user(user_id, username=None, first_name=None, last_name=None):
+    """Authenticate a user and save to database."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    now = get_shamsi_datetime()
+    cursor.execute(
+        'INSERT OR REPLACE INTO authenticated_users (user_id, username, first_name, last_name, authenticated_at) VALUES (?, ?, ?, ?, ?)',
+        (user_id, username, first_name, last_name, now)
+    )
+    conn.commit()
+    conn.close()
+
+def get_authenticated_users_count():
+    """Get count of authenticated users."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT COUNT(*) FROM authenticated_users')
+    count = cursor.fetchone()[0]
+    conn.close()
+    return count
 
 # Initialize database on import
 init_database()
