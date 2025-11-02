@@ -565,10 +565,10 @@ def authenticate_user(user_id, username=None, first_name=None, last_name=None):
     """Authenticate a user and save to database."""
     conn = get_connection()
     cursor = conn.cursor()
-    now = get_shamsi_datetime()
+    authenticated_at = jdatetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
     cursor.execute(
         'INSERT OR REPLACE INTO authenticated_users (user_id, username, first_name, last_name, authenticated_at) VALUES (?, ?, ?, ?, ?)',
-        (user_id, username, first_name, last_name, now)
+        (user_id, username, first_name, last_name, authenticated_at)
     )
     conn.commit()
     conn.close()
