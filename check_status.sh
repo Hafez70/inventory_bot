@@ -5,6 +5,7 @@
 
 BOT_DIR=~/repositories/inventory_bot
 PID_FILE=$BOT_DIR/bot.pid
+VENV_ACTIVATE=~/virtualenv/repositories/inventory_bot/3.11/bin/activate
 
 echo "========================================"
 echo "  Telegram Warehouse Bot Status"

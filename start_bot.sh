@@ -4,7 +4,7 @@
 # Use this to manually start the bot from terminal
 
 BOT_DIR=~/repositories/inventory_bot
-VENV_ACTIVATE=~/virtualenv/repositories/inventory_bot/3.9/bin/activate
+VENV_ACTIVATE=~/virtualenv/repositories/inventory_bot/3.11/bin/activate
 
 echo "Starting Telegram Warehouse Bot..."
 echo "=================================="
