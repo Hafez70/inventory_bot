@@ -164,6 +164,7 @@ __marimo__/
 
 # Project-specific
 warehouse.db
+backups/
 images/
 
 # OS
