@@ -1,0 +1,15 @@
+# .htaccess for API reverse proxy
+# Place this in ~/public_html/api/.htaccess if using Method 2 (background process)
+
+RewriteEngine On
+
+# Proxy all requests to local API server
+RewriteRule ^(.*)$ http://localhost:8000/$1 [P,L]
+
+# Optional: Add CORS headers
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+</IfModule>
+
