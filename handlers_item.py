@@ -666,6 +666,7 @@ async def item_view(update: Update, context: ContextTypes.DEFAULT_TYPE):
     images = db.get_item_images(item_id)
     
     keyboard = [
+        [InlineKeyboardButton(msg.BTN_EDIT_AVAILABLE_COUNT, callback_data=f'item_edit_available_count_{item_id}')],
         [InlineKeyboardButton(msg.BTN_EDIT, callback_data=f'item_edit_{item_id}')],
         [InlineKeyboardButton(msg.BTN_VIEW_IMAGES, callback_data=f'item_images_{item_id}')],
         [InlineKeyboardButton(msg.BTN_DELETE, callback_data=f'item_delete_confirm_{item_id}')],
