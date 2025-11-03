@@ -1,11 +1,14 @@
 """Handlers for item operations with inventory management and new fields."""
 
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
-import database as db
-import messages as msg
-import utils
-import os
+from database import database as db
+from bot import messages as msg
+from database import utils
 
 async def item_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Show item management menu."""
@@ -392,7 +395,9 @@ async def item_create_handle_photo(update: Update, context: ContextTypes.DEFAULT
     file = await context.bot.get_file(photo.file_id)
     
     filename = f"item_{item_id}_{image_count + 1}.jpg"
-    filepath = os.path.join('images', filename)
+    images_dir = os.path.join(os.path.dirname(__file__), '..', 'database', 'images')
+    os.makedirs(images_dir, exist_ok=True)
+    filepath = os.path.join(images_dir, filename)
     
     await file.download_to_drive(filepath)
     db.add_item_image(item_id, filepath)
@@ -998,7 +1003,9 @@ async def item_edit_handle_photo(update: Update, context: ContextTypes.DEFAULT_T
     file = await context.bot.get_file(photo.file_id)
     
     filename = f"item_{item_id}_{image_count + 1}.jpg"
-    filepath = os.path.join('images', filename)
+    images_dir = os.path.join(os.path.dirname(__file__), '..', 'database', 'images')
+    os.makedirs(images_dir, exist_ok=True)
+    filepath = os.path.join(images_dir, filename)
     
     await file.download_to_drive(filepath)
     db.add_item_image(item_id, filepath)

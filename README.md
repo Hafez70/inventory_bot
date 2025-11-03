@@ -1,179 +1,266 @@
-# Telegram Warehouse Management Bot
+# Warehouse Management System
 
-A comprehensive Telegram bot for managing warehouse inventory with support for items, categories, subcategories, brands, and images.
+A comprehensive warehouse/inventory management system with Telegram Bot interface and REST API backend.
 
-## Features
+## 🏗️ Project Structure
 
-✨ **Persian Interface** - All messages and interactions are in Persian (Farsi)
-📅 **Shamsi Date Support** - Uses Jalali (Persian) calendar for all dates
-📁 **Category Management** - Create, read, update, and delete categories
-📂 **Subcategory Management** - Organize items with subcategories
-🏷️ **Brand Management** - Manage product brands
-📦 **Item Management** - Full CRUD operations on inventory items
-📷 **Image Support** - Upload and store multiple images per item
-🔐 **System-Generated Codes** - Automatic unique code generation for all entities
-🎯 **Button-Based Interface** - All commands accessible via inline keyboard buttons
+```
+warehousing/
+├── bot/                    # Telegram Bot Application
+│   ├── bot.py             # Main bot file
+│   ├── messages.py        # Persian UI messages
+│   ├── handlers_*.py      # Command handlers
+│   └── README.md
+│
+├── database/              # Database Layer
+│   ├── database.py        # SQLite operations
+│   ├── utils.py           # Utility functions
+│   ├── migrate.py         # Database migration script
+│   ├── warehouse.db       # SQLite database (created at runtime)
+│   ├── images/            # Item images storage
+│   └── README.md
+│
+├── api/                   # REST API Backend
+│   ├── main.py            # FastAPI application
+│   ├── requirements.txt   # API dependencies
+│   └── README.md
+│
+├── webApp/                # Web Application (Future)
+│   └── README.md
+│
+├── deployment/            # Deployment Scripts & Guides
+│   ├── backup_db.sh       # Database backup script
+│   ├── check_status.sh    # Bot status checker
+│   ├── keep_alive.sh      # Keep bot running
+│   ├── passenger_wsgi.py  # cPanel WSGI wrapper
+│   ├── DEPLOYMENT.md      # Deployment guide
+│   ├── BACKUP_GUIDE.md    # Backup setup guide
+│   ├── AUTH_UPDATE.md     # Auth update guide
+│   └── UPDATE_BOT_HOST.md # Host update guide
+│
+├── docs/                  # Documentation
+│   ├── ARCHITECTURE.md    # System architecture
+│   ├── MIGRATION_GUIDE.md # Migration guide
+│   ├── QUICK_REFERENCE.md # Quick reference
+│   └── QUICKSTART.py      # Quick start script
+│
+├── requirements.txt       # Project dependencies
+├── LICENSE                # License file
+├── README.md              # This file
+├── .env                   # Environment variables (create this)
+├── .gitignore             # Git ignore rules
+├── start_bot.bat/sh       # Bot launcher scripts
+└── start_api.bat/sh       # API launcher scripts
+```
 
-## Requirements
+## 🚀 Quick Start
 
-- Python 3.8 or higher
-- Telegram Bot Token (from [@BotFather](https://t.me/botfather))
+### 1. Install Dependencies
 
-## Installation
-
-1. **Clone or download this project**
-
-2. **Install dependencies**
 ```bash
 pip install -r requirements.txt
 ```
 
-3. **Configure the bot**
+### 2. Configure Environment
 
-Create a `.env` file in the project root with your Telegram bot token:
+Create `.env` file in project root:
+
+```env
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
+BOT_PASSWORD=ciFarco@1213#3221
 ```
-TELEGRAM_BOT_TOKEN=your_bot_token_here
+
+### 3. Run Telegram Bot
+
+**Windows:**
+```cmd
+start_bot.bat
 ```
 
-To get a bot token:
-- Open Telegram and search for [@BotFather](https://t.me/botfather)
-- Send `/newbot` command
-- Follow the instructions to create your bot
-- Copy the token provided by BotFather
-
-4. **Run the bot**
+**Linux:**
 ```bash
-python bot.py
+chmod +x start_bot.sh
+./start_bot.sh
 ```
 
-## Usage
+### 4. Run API (Optional)
 
-### Starting the Bot
-
-1. Open Telegram and search for your bot
-2. Send `/start` command
-3. Use the inline keyboard buttons to navigate
-
-### Main Features
-
-#### Categories (دسته‌بندی‌ها)
-- **Create**: Add new categories with auto-generated codes
-- **List**: View all categories
-- **Edit**: Update category names
-- **Delete**: Remove categories (warning: deletes related items)
-
-#### Subcategories (زیردسته‌ها)
-- **Create**: Add subcategories linked to categories
-- **List**: View all subcategories with their parent categories
-- **Edit**: Update subcategory names
-- **Delete**: Remove subcategories
-
-#### Brands (برندها)
-- **Create**: Add new brands
-- **List**: View all brands
-- **Edit**: Update brand names
-- **Delete**: Remove brands
-
-#### Items (کالاها)
-- **Create**: Add new items with:
-  - Category selection
-  - Subcategory selection (optional)
-  - Brand selection
-  - Item name
-  - Auto-generated item code
-  - Multiple image uploads
-- **List**: View all items
-- **View**: See detailed item information
-- **Edit**: Update item details or add more images
-- **Delete**: Remove items (deletes all related images)
-- **View Images**: Display all images for an item
-
-### Code Generation
-
-The system automatically generates unique codes for all entities:
-- Categories: `CAT######`
-- Subcategories: `SUB######`
-- Brands: `BRD######`
-- Items: `ITM######`
-
-### Image Storage
-
-All uploaded images are stored in the `images/` folder with naming format:
-```
-item_{item_id}_{image_number}.jpg
+**Windows:**
+```cmd
+start_api.bat
 ```
 
-## Database
-
-The bot uses SQLite database (`warehouse.db`) to store all data:
-- Categories
-- Subcategories
-- Brands
-- Items
-- Item Images
-- User States (for conversation flow)
-
-## Project Structure
-
-```
-.
-├── bot.py                      # Main bot file
-├── database.py                 # Database operations
-├── messages.py                 # Persian text messages
-├── utils.py                    # Utility functions
-├── handlers_category.py        # Category handlers
-├── handlers_subcategory.py     # Subcategory handlers
-├── handlers_brand.py           # Brand handlers
-├── handlers_item.py            # Item handlers
-├── requirements.txt            # Python dependencies
-├── .env                        # Bot configuration (create this)
-├── warehouse.db               # SQLite database (auto-created)
-├── images/                    # Image storage (auto-created)
-└── README.md                  # This file
+**Linux:**
+```bash
+chmod +x start_api.sh
+./start_api.sh
 ```
 
-## Dependencies
+API will be available at: `http://localhost:8000`
 
-- `python-telegram-bot==20.7` - Telegram Bot API wrapper
-- `jdatetime==4.1.1` - Shamsi (Jalali) date support
-- `Pillow==10.1.0` - Image processing
-- `python-dotenv==1.0.0` - Environment variable management
+API Documentation: `http://localhost:8000/docs`
 
-## Notes
+## 📦 Features
 
-- The bot supports multiple users simultaneously
-- Each user can have their own conversation flow
-- All dates are displayed in Shamsi (Jalali) format
-- Images are stored permanently in the `images/` folder
-- Database is created automatically on first run
-- The bot uses inline keyboards for all interactions (no text commands)
+### Telegram Bot
+- ✅ User authentication with password
+- ✅ Full CRUD for items, categories, subcategories, brands
+- ✅ Item image upload (multiple images per item)
+- ✅ Search items (by name, code, description)
+- ✅ Filter items by brand or category
+- ✅ Low stock alerts
+- ✅ Inventory management
+- ✅ Persian (Shamsi) date system
+- ✅ Inline keyboard navigation
 
-## Troubleshooting
+### REST API
+- ✅ RESTful endpoints for all entities
+- ✅ Search and filtering
+- ✅ Pagination support
+- ✅ CORS enabled
+- ✅ Auto-generated documentation
+- ✅ JSON responses
+- ✅ Stock update endpoint
 
-### Bot doesn't respond
-- Check if the bot is running
-- Verify the bot token in `.env` file
-- Make sure you've sent `/start` command
+### Database
+- ✅ SQLite (simple, file-based)
+- ✅ Automatic backups
+- ✅ Persian date support
+- ✅ Relational data (categories, brands, etc.)
+- ✅ Image path storage
 
-### Images not uploading
-- Check if `images/` folder exists and has write permissions
-- Verify image format (JPG, PNG supported)
+## 🔧 Module Documentation
 
-### Database errors
-- Delete `warehouse.db` file to reset (WARNING: deletes all data)
-- The database will be recreated on next run
+Each module has its own README:
+- [Bot Documentation](./bot/README.md)
+- [Database Documentation](./database/README.md)
+- [API Documentation](./api/README.md)
+- [WebApp Documentation](./webApp/README.md)
 
-## License
+## 📚 Additional Documentation
 
-This project is provided as-is for warehouse management purposes.
+- [Architecture Diagrams](./docs/ARCHITECTURE.md)
+- [Migration Guide](./docs/MIGRATION_GUIDE.md)
+- [Quick Reference](./docs/QUICK_REFERENCE.md)
+- [Deployment Guide](./deployment/DEPLOYMENT.md)
+- [Backup Setup](./deployment/BACKUP_GUIDE.md)
 
-## Support
+## 📊 Database Schema
 
-For issues or questions, please check the code comments or modify as needed for your specific use case.
+```
+categories
+  ├── subcategories
+  │     └── items
+  │           ├── item_images
+  │           └── brands
+  │           └── measure_types
+
+user_states (for bot conversation flow)
+authenticated_users (for bot access control)
+```
+
+## 🌐 API Endpoints
+
+### Items
+- `GET /api/items` - List all items
+- `GET /api/items/search?q={query}` - Search items
+- `GET /api/items/{id}` - Get item details
+- `PATCH /api/items/{id}/stock` - Update stock
+
+### Categories
+- `GET /api/categories` - List categories
+- `GET /api/categories/{id}/subcategories` - Get subcategories
+
+### Brands
+- `GET /api/brands` - List brands
+- `GET /api/brands/{id}/items` - Get brand items
+
+### Statistics
+- `GET /api/stats` - Warehouse statistics
+- `GET /api/low-stock` - Low stock items
+
+Full API documentation: `http://localhost:8000/docs`
+
+## 🛠️ Tech Stack
+
+- **Bot Framework**: python-telegram-bot (v22+)
+- **API Framework**: FastAPI
+- **Database**: SQLite3
+- **Date System**: jdatetime (Persian dates)
+- **Image Processing**: Pillow
+- **Server**: Uvicorn (ASGI)
+
+## 📁 Data Files
+
+- `database/warehouse.db` - Main database file
+- `database/images/` - Uploaded item images
+- `backups/` - Daily database backups (auto-generated)
+- `.env` - Configuration (create manually)
+
+## 🔐 Authentication
+
+### Telegram Bot
+- Password-based authentication
+- Default password: `ciFarco@1213#3221`
+- Set via `BOT_PASSWORD` in `.env`
+
+### API
+- Currently open (no auth)
+- Add JWT/API keys in production
+
+## 🚢 Deployment
+
+### cPanel Hosting
+
+See [deployment/DEPLOYMENT.md](./deployment/DEPLOYMENT.md) for detailed cPanel setup instructions.
+
+Quick summary:
+1. Upload project to cPanel
+2. Setup Python App for bot
+3. Setup separate Python App for API (optional)
+4. Configure environment variables
+5. Setup cron job for keep-alive and backups
+
+### Local Development
+
+1. Clone repository
+2. Install dependencies: `pip install -r requirements.txt`
+3. Create `.env` file with bot token
+4. Run bot: `python bot/bot.py`
+5. Run API: `uvicorn api.main:app --reload`
+
+## 🗓️ Backup System
+
+Automatic daily backups are configured via `deployment/backup_db.sh`:
+- Keeps last 7 days of backups
+- Stored in `/backups/` directory (auto-generated)
+- Setup via cron job on cPanel
+
+See [deployment/BACKUP_GUIDE.md](./deployment/BACKUP_GUIDE.md) for setup instructions.
+
+## 📝 License
+
+This project is private and proprietary.
+
+## 👥 Support
+
+For issues or questions, contact the development team.
+
+## 🎯 Roadmap
+
+- [x] Telegram Bot with full CRUD
+- [x] REST API backend
+- [x] Search and filtering
+- [x] Low stock alerts
+- [ ] Web application UI (Angular/React)
+- [ ] Advanced reporting
+- [ ] Export to Excel
+- [ ] Barcode/QR code support
+- [ ] Multi-user roles
+- [ ] API authentication
 
 ---
 
-**Created for CI-FARCO Warehousing Project**
-
-مدیریت انبار با ربات تلگرام 🏪
-
+**Version**: 1.0.0  
+**Last Updated**: November 2025  
+**Status**: ✅ Production Ready (Bot + API)

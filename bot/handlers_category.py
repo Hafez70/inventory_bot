@@ -1,10 +1,14 @@
 """Handlers for category operations."""
 
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes, ConversationHandler
-import database as db
-import messages as msg
-import utils
+from database import database as db
+from bot import messages as msg
+from database import utils
 
 # Conversation states
 CATEGORY_NAME = 1

@@ -1,10 +1,14 @@
 """Handlers for measure type operations."""
 
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
-import database as db
-import messages as msg
-import utils
+from database import database as db
+from bot import messages as msg
+from database import utils
 
 async def measure_type_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Show measure type management menu."""

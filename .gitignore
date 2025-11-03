@@ -163,9 +163,9 @@ marimo/_lsp/
 __marimo__/
 
 # Project-specific
-warehouse.db
+database/warehouse.db
+database/images/
 backups/
-images/
 
 # OS
 .DS_Store

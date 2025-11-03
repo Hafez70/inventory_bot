@@ -13,14 +13,17 @@ from telegram.ext import (
     filters
 )
 
-import database as db
-import messages as msg
-import handlers_category as cat_handlers
-import handlers_subcategory as subcat_handlers
-import handlers_brand as brand_handlers
-import handlers_measure_type as mt_handlers
-import handlers_item as item_handlers
-import handlers_low_stock as low_stock_handlers
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+from database import database as db
+from bot import messages as msg
+from bot import handlers_category as cat_handlers
+from bot import handlers_subcategory as subcat_handlers
+from bot import handlers_brand as brand_handlers
+from bot import handlers_measure_type as mt_handlers
+from bot import handlers_item as item_handlers
+from bot import handlers_low_stock as low_stock_handlers
 
 # Load environment variables
 load_dotenv()

@@ -3,7 +3,8 @@ import os
 from datetime import datetime
 import jdatetime
 
-DATABASE_FILE = 'warehouse.db'
+# Database file in the same directory as this module
+DATABASE_FILE = os.path.join(os.path.dirname(__file__), 'warehouse.db')
 
 def init_database():
     """Initialize the database with all required tables."""
@@ -111,8 +112,9 @@ def init_database():
     conn.close()
     
     # Create images directory if it doesn't exist
-    if not os.path.exists('images'):
-        os.makedirs('images')
+    images_dir = os.path.join(os.path.dirname(__file__), 'images')
+    if not os.path.exists(images_dir):
+        os.makedirs(images_dir)
 
 def get_connection():
     """Get a database connection."""
