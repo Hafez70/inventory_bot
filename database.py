@@ -395,6 +395,67 @@ def get_all_items():
     conn.close()
     return items
 
+def search_items(search_text):
+    """Search items by name, custom_code, or description."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    search_pattern = f"%{search_text}%"
+    cursor.execute('''
+        SELECT i.id, i.code, i.custom_code, i.name, i.description,
+               c.name, s.name, b.name, m.name, i.available_count, i.video_url,
+               i.created_at, i.updated_at
+        FROM items i
+        JOIN categories c ON i.category_id = c.id
+        JOIN subcategories s ON i.subcategory_id = s.id
+        JOIN brands b ON i.brand_id = b.id
+        JOIN measure_types m ON i.measure_type_id = m.id
+        WHERE i.name LIKE ? OR i.custom_code LIKE ? OR i.description LIKE ?
+        ORDER BY i.created_at DESC
+    ''', (search_pattern, search_pattern, search_pattern))
+    items = cursor.fetchall()
+    conn.close()
+    return items
+
+def get_items_by_brand(brand_id):
+    """Get all items for a specific brand."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT i.id, i.code, i.custom_code, i.name, i.description,
+               c.name, s.name, b.name, m.name, i.available_count, i.video_url,
+               i.created_at, i.updated_at
+        FROM items i
+        JOIN categories c ON i.category_id = c.id
+        JOIN subcategories s ON i.subcategory_id = s.id
+        JOIN brands b ON i.brand_id = b.id
+        JOIN measure_types m ON i.measure_type_id = m.id
+        WHERE i.brand_id = ?
+        ORDER BY i.created_at DESC
+    ''', (brand_id,))
+    items = cursor.fetchall()
+    conn.close()
+    return items
+
+def get_items_by_subcategory(subcategory_id):
+    """Get all items for a specific subcategory."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT i.id, i.code, i.custom_code, i.name, i.description,
+               c.name, s.name, b.name, m.name, i.available_count, i.video_url,
+               i.created_at, i.updated_at
+        FROM items i
+        JOIN categories c ON i.category_id = c.id
+        JOIN subcategories s ON i.subcategory_id = s.id
+        JOIN brands b ON i.brand_id = b.id
+        JOIN measure_types m ON i.measure_type_id = m.id
+        WHERE i.subcategory_id = ?
+        ORDER BY i.created_at DESC
+    ''', (subcategory_id,))
+    items = cursor.fetchall()
+    conn.close()
+    return items
+
 def get_item_by_id(item_id):
     """Get an item by ID."""
     conn = get_connection()

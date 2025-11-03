@@ -143,6 +143,8 @@ async def handle_text_message(update: Update, context: ContextTypes.DEFAULT_TYPE
         await mt_handlers.measure_type_edit_handle_name(update, context)
     elif state == 'measure_type_edit_threshold':
         await mt_handlers.measure_type_edit_handle_threshold(update, context)
+    elif state == 'awaiting_item_search':
+        await item_handlers.item_search_handle_text(update, context)
     elif state == 'item_create_name':
         await item_handlers.item_create_handle_name(update, context)
     elif state == 'item_create_custom_code':
@@ -312,6 +314,18 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
         await item_handlers.item_create_done(update, context)
     elif data == 'item_list':
         await item_handlers.item_list(update, context)
+    elif data == 'item_list_search':
+        await item_handlers.item_list_search_start(update, context)
+    elif data == 'item_list_by_brand':
+        await item_handlers.item_list_by_brand_start(update, context)
+    elif data.startswith('item_list_brand_'):
+        await item_handlers.item_list_by_brand_show(update, context)
+    elif data == 'item_list_by_category':
+        await item_handlers.item_list_by_category_start(update, context)
+    elif data.startswith('item_list_cat_'):
+        await item_handlers.item_list_by_category_show_subcategories(update, context)
+    elif data.startswith('item_list_subcat_'):
+        await item_handlers.item_list_by_subcategory_show(update, context)
     elif data.startswith('item_view_') and not data.startswith('item_view_images'):
         await item_handlers.item_view(update, context)
     elif data.startswith('item_images_'):

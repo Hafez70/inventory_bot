@@ -438,14 +438,106 @@ async def item_create_done(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ============================================================================
 
 async def item_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Show list of all items."""
+    """Show item list menu with search options."""
     query = update.callback_query
     await query.answer()
     
-    items = db.get_all_items()
+    keyboard = [
+        [InlineKeyboardButton(msg.BTN_SEARCH, callback_data='item_list_search')],
+        [InlineKeyboardButton(msg.BTN_BY_BRAND, callback_data='item_list_by_brand')],
+        [InlineKeyboardButton(msg.BTN_BY_CATEGORY, callback_data='item_list_by_category')],
+        [InlineKeyboardButton(msg.BTN_BACK, callback_data='item_menu')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    await query.edit_message_text(msg.ITEM_LIST_MENU, reply_markup=reply_markup)
+
+# ============================================================================
+# SEARCH ITEMS
+# ============================================================================
+
+async def item_list_search_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Start search for items."""
+    query = update.callback_query
+    await query.answer()
+    
+    db.set_user_state(query.from_user.id, 'awaiting_item_search', {})
+    
+    keyboard = [[InlineKeyboardButton(msg.BTN_CANCEL, callback_data='item_list')]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    await query.edit_message_text(msg.ITEM_SEARCH_REQUEST, reply_markup=reply_markup)
+
+async def item_search_handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Handle search text input."""
+    search_text = update.message.text.strip()
+    user_id = update.effective_user.id
+    
+    items = db.search_items(search_text)
+    
+    db.clear_user_state(user_id)
     
     if not items:
-        keyboard = [[InlineKeyboardButton(msg.BTN_BACK, callback_data='item_menu')]]
+        keyboard = [[InlineKeyboardButton(msg.BTN_BACK, callback_data='item_list')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await update.message.reply_text(msg.ITEM_SEARCH_NO_RESULTS, reply_markup=reply_markup)
+        return
+    
+    keyboard = []
+    for item in items[:20]:
+        item_id, code, custom_code, name, description, cat_name, subcat_name, brand_name, measure_type_name, available_count, video_url, created_at, updated_at = item
+        keyboard.append([InlineKeyboardButton(name, callback_data=f'item_view_{item_id}')])
+    
+    keyboard.append([InlineKeyboardButton(msg.BTN_BACK, callback_data='item_list')])
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    result_text = f"🔍 یافت شد: {len(items)} کالا\n\nلطفا کالای مورد نظر را انتخاب کنید:"
+    
+    await update.message.reply_text(result_text, reply_markup=reply_markup)
+
+# ============================================================================
+# LIST ITEMS BY BRAND
+# ============================================================================
+
+async def item_list_by_brand_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Show brand list for filtering items."""
+    query = update.callback_query
+    await query.answer()
+    
+    brands = db.get_all_brands()
+    
+    if not brands:
+        keyboard = [[InlineKeyboardButton(msg.BTN_BACK, callback_data='item_list')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.edit_message_text(
+            "❌ هیچ برندی ثبت نشده است.",
+            reply_markup=reply_markup
+        )
+        return
+    
+    keyboard = []
+    for brand in brands:
+        brand_id, code, name, created_at = brand
+        keyboard.append([InlineKeyboardButton(
+            f"{name} ({code})",
+            callback_data=f'item_list_brand_{brand_id}'
+        )])
+    
+    keyboard.append([InlineKeyboardButton(msg.BTN_BACK, callback_data='item_list')])
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    await query.edit_message_text(msg.ITEM_SELECT_BRAND_FOR_LIST, reply_markup=reply_markup)
+
+async def item_list_by_brand_show(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Show items filtered by brand."""
+    query = update.callback_query
+    await query.answer()
+    
+    brand_id = int(query.data.split('_')[3])
+    items = db.get_items_by_brand(brand_id)
+    
+    if not items:
+        keyboard = [[InlineKeyboardButton(msg.BTN_BACK, callback_data='item_list_by_brand')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.edit_message_text(msg.ITEM_LIST_EMPTY, reply_markup=reply_markup)
         return
@@ -453,18 +545,103 @@ async def item_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = []
     for item in items[:20]:
         item_id, code, custom_code, name, description, cat_name, subcat_name, brand_name, measure_type_name, available_count, video_url, created_at, updated_at = item
-        display_text = f"{name} ({custom_code}) - {available_count} {measure_type_name}"
-        keyboard.append([InlineKeyboardButton(display_text, callback_data=f'item_view_{item_id}')])
+        keyboard.append([InlineKeyboardButton(name, callback_data=f'item_view_{item_id}')])
     
-    keyboard.append([InlineKeyboardButton(msg.BTN_BACK, callback_data='item_menu')])
+    keyboard.append([InlineKeyboardButton(msg.BTN_BACK, callback_data='item_list_by_brand')])
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    item_list_text = "\n".join([f"🔹 {item[3]} ({item[2]}) - {item[9]} {item[8]}" for item in items[:20]])
+    result_text = f"🏷️ {items[0][7]}\n\nتعداد کالاها: {len(items)}\n\nلطفا کالای مورد نظر را انتخاب کنید:"
     
-    await query.edit_message_text(
-        msg.ITEM_LIST.format(item_list_text),
-        reply_markup=reply_markup
-    )
+    await query.edit_message_text(result_text, reply_markup=reply_markup)
+
+# ============================================================================
+# LIST ITEMS BY CATEGORY
+# ============================================================================
+
+async def item_list_by_category_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Show category list for filtering items."""
+    query = update.callback_query
+    await query.answer()
+    
+    categories = db.get_all_categories()
+    
+    if not categories:
+        keyboard = [[InlineKeyboardButton(msg.BTN_BACK, callback_data='item_list')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.edit_message_text(
+            "❌ هیچ دسته‌بندی ثبت نشده است.",
+            reply_markup=reply_markup
+        )
+        return
+    
+    keyboard = []
+    for cat in categories:
+        cat_id, code, name, created_at = cat
+        keyboard.append([InlineKeyboardButton(
+            f"{name} ({code})",
+            callback_data=f'item_list_cat_{cat_id}'
+        )])
+    
+    keyboard.append([InlineKeyboardButton(msg.BTN_BACK, callback_data='item_list')])
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    await query.edit_message_text(msg.ITEM_SELECT_CATEGORY_FOR_LIST, reply_markup=reply_markup)
+
+async def item_list_by_category_show_subcategories(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Show subcategory list after category selection."""
+    query = update.callback_query
+    await query.answer()
+    
+    category_id = int(query.data.split('_')[3])
+    subcategories = db.get_subcategories_by_category(category_id)
+    
+    if not subcategories:
+        keyboard = [[InlineKeyboardButton(msg.BTN_BACK, callback_data='item_list_by_category')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.edit_message_text(
+            "❌ این دسته‌بندی زیردسته ندارد.",
+            reply_markup=reply_markup
+        )
+        return
+    
+    keyboard = []
+    for subcat in subcategories:
+        subcat_id, code, name, created_at = subcat
+        keyboard.append([InlineKeyboardButton(
+            f"{name} ({code})",
+            callback_data=f'item_list_subcat_{subcat_id}'
+        )])
+    
+    keyboard.append([InlineKeyboardButton(msg.BTN_BACK, callback_data='item_list_by_category')])
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    await query.edit_message_text(msg.ITEM_SELECT_SUBCATEGORY_FOR_LIST, reply_markup=reply_markup)
+
+async def item_list_by_subcategory_show(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Show items filtered by subcategory."""
+    query = update.callback_query
+    await query.answer()
+    
+    subcategory_id = int(query.data.split('_')[3])
+    items = db.get_items_by_subcategory(subcategory_id)
+    
+    if not items:
+        keyboard = [[InlineKeyboardButton(msg.BTN_BACK, callback_data='item_list_by_category')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.edit_message_text(msg.ITEM_LIST_EMPTY, reply_markup=reply_markup)
+        return
+    
+    keyboard = []
+    for item in items[:20]:
+        item_id, code, custom_code, name, description, cat_name, subcat_name, brand_name, measure_type_name, available_count, video_url, created_at, updated_at = item
+        keyboard.append([InlineKeyboardButton(name, callback_data=f'item_view_{item_id}')])
+    
+    keyboard.append([InlineKeyboardButton(msg.BTN_BACK, callback_data='item_list_by_category')])
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    result_text = f"📁 {items[0][5]} > {items[0][6]}\n\nتعداد کالاها: {len(items)}\n\nلطفا کالای مورد نظر را انتخاب کنید:"
+    
+    await query.edit_message_text(result_text, reply_markup=reply_markup)
 
 async def item_view(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """View item details."""
