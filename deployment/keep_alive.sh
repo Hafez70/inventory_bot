@@ -4,10 +4,10 @@
 # This script ensures the bot is always running and restarts it if needed
 
 # Configuration - Update these paths for your setup
-BOT_DIR=~/repositories/inventory_bot
+BOT_DIR=~/app
 PID_FILE=$BOT_DIR/bot.pid
 LOG_FILE=$BOT_DIR/bot.log
-VENV_ACTIVATE=~/virtualenv/repositories/inventory_bot/3.11/bin/activate
+VENV_ACTIVATE=~/virtualenv/app/3.11/bin/activate
 
 # Function to check if bot is running
 is_bot_running() {
