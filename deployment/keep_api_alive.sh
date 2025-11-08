@@ -10,7 +10,7 @@ cd "$API_DIR"
 
 # Check if API is running
 if ! pgrep -f "uvicorn api.main:app" > /dev/null; then
-    echo "[$(date)] API not running, starting..." >> "$LOG_FILE"
+    echo "[$(date)] API not running, starting...." >> "$LOG_FILE"
     
     # Activate virtual environment
     source "$VENV_ACTIVATE"
