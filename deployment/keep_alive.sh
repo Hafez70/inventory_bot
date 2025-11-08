@@ -38,7 +38,7 @@ else
 fi
 
 # Start the bot in background
-nohup python bot.py >> "$LOG_FILE" 2>&1 &
+nohup python bot/bot.py >> "$LOG_FILE" 2>&1 &
 NEW_PID=$!
 
 # Save the PID

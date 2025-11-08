@@ -16,7 +16,7 @@ if ! pgrep -f "uvicorn api.main:app" > /dev/null; then
     source "$VENV_ACTIVATE"
     
     # Start API in background
-    nohup python -m uvicorn api.main:app --host 0.0.0.0 --port 8000 >> "$LOG_FILE" 2>&1 &
+    nohup python -m uvicorn api.main:app --host 0.0.0.0 --port 8001 >> "$LOG_FILE" 2>&1 &
     
     echo "[$(date)] API started with PID: $!" >> "$LOG_FILE"
 else
