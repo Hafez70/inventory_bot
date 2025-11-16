@@ -1,0 +1,20 @@
+<nav class="bottom-nav" [class.bottom-nav--rtl]="isRTL()">
+  @for (item of navItems(); track item.path) {
+    <a
+      [routerLink]="item.path"
+      routerLinkActive="active"
+      class="nav-item"
+      [class.nav-item--active]="isActiveRoute(item.path)"
+    >
+      <div class="nav-item__icon">
+        @if (isActiveRoute(item.path)) {
+          <span [innerHTML]="item.activeIcon"></span>
+        } @else {
+          <span [innerHTML]="item.icon"></span>
+        }
+      </div>
+      <span class="nav-item__label">{{ item.label }}</span>
+    </a>
+  }
+</nav>
+

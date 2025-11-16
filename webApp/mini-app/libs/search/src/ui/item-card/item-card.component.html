@@ -1,0 +1,56 @@
+<div class="item-card" (click)="handleClick()">
+  <!-- Item Image/Icon -->
+  <div class="item-icon">
+    @if (item().image_path) {
+      <img [src]="getImageUrl()" [alt]="item().name" class="item-image" />
+    } @else {
+      <div class="item-placeholder">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+        </svg>
+      </div>
+    }
+  </div>
+
+  <!-- Item Info -->
+  <div class="item-info">
+    <h3 class="item-name">{{ item().name }}</h3>
+    
+    <div class="item-details">
+      @if (item().custom_code) {
+        <span class="item-badge item-badge--code">
+          {{ item().custom_code }}
+        </span>
+      }
+      @if (item().brand_name) {
+        <span class="item-badge item-badge--brand">
+          {{ item().brand_name }}
+        </span>
+      }
+    </div>
+
+    @if (item().description) {
+      <p class="item-description">{{ item().description }}</p>
+    }
+
+    <!-- Stock Info -->
+    <div class="item-stock">
+      <span class="stock-label">موجودی:</span>
+      <span 
+        class="stock-value"
+        [class.stock-value--low]="isLowStock()"
+        [class.stock-value--zero]="item().available_count === 0"
+      >
+        {{ item().available_count || 0 }} {{ item().measure_type_name || 'عدد' }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Arrow Icon -->
+  <div class="item-arrow">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+    </svg>
+  </div>
+</div>
+

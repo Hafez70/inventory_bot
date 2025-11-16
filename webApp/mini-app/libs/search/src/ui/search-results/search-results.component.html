@@ -1,0 +1,36 @@
+<div class="search-results">
+  @if (!hasSearched()) {
+    <!-- Empty State - No Search Yet -->
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </div>
+      <h3 class="empty-title">{{ emptyStates.NO_SEARCH.title }}</h3>
+      <p class="empty-description">{{ emptyStates.NO_SEARCH.description }}</p>
+    </div>
+  } @else if (items().length === 0) {
+    <!-- Empty State - No Results -->
+    <div class="empty-state">
+      <div class="empty-icon empty-icon--warning">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      </div>
+      <h3 class="empty-title">{{ emptyStates.NO_RESULTS.title }}</h3>
+      <p class="empty-description">{{ emptyStates.NO_RESULTS.description }}</p>
+    </div>
+  } @else {
+    <!-- Results List -->
+    <div class="results-header">
+      <span class="results-count">{{ items().length }} کالا یافت شد</span>
+    </div>
+    <div class="results-list">
+      @for (item of items(); track item.id) {
+        <wh-item-card [item]="item" />
+      }
+    </div>
+  }
+</div>
+

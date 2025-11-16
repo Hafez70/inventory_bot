@@ -1,0 +1,31 @@
+<div class="search-container">
+  <!-- Header -->
+  <div class="search-header">
+    <h1 class="search-title">جستجوی کالا</h1>
+    <p class="search-subtitle">نام، کد یا توضیحات کالا را جستجو کنید</p>
+  </div>
+
+  <!-- Search Input -->
+  <wh-search-input
+    [searchQuery]="searchQuery()"
+    (searchQueryChange)="onSearchQueryChange($event)"
+    (search)="handleSearch()"
+  />
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p class="loading-text">در حال جستجو...</p>
+    </div>
+  }
+
+  <!-- Results -->
+  @if (!isLoading()) {
+    <wh-search-results
+      [items]="searchResults()"
+      [hasSearched]="hasSearched()"
+    />
+  }
+</div>
+
