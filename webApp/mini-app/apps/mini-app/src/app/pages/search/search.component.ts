@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { SearchContainerComponent } from '@warehousing/search';
+import { SearchContainerComponent } from '@search';
 
 @Component({
   selector: 'app-search',

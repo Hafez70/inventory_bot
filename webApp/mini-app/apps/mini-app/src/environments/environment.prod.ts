@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: '/api',  // Relative path for same-domain deployment
+  apiUrl: 'https://bazardaghigh.ir/api',
 };
 

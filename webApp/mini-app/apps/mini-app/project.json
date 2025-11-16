@@ -51,6 +51,9 @@
     },
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
+      "options": {
+        "port": 4203
+      },
       "configurations": {
         "production": {
           "buildTarget": "mini-app:build:production"

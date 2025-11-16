@@ -15,9 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@warehousing/shared/ui-layout": ["libs/shared/ui-layout/src/index.ts"],
-      "@warehousing/search": ["libs/search/src/index.ts"],
-      "@warehousing/shared/data-access": ["libs/shared/data-access/src/index.ts"]
+      "@shared": ["libs/shared"],
+      "@search": ["libs/search/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

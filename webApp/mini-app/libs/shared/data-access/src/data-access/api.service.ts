@@ -1,14 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable} from 'rxjs';
-import { DEFAULT_API_CONFIG } from '../domain/api.config';
+import { API_CONFIG } from '../domain/api.config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
   private http = inject(HttpClient);
-  private config = DEFAULT_API_CONFIG;
+  private config = inject(API_CONFIG);
 
   get<T>(endpoint: string): Observable<T> {
     return this.http.get<T>(`${this.config.baseUrl}${endpoint}`);

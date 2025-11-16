@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ApiService } from '@warehousing/shared/data-access';
+import { ApiService } from '@shared';
 import { Item, SearchItemsResponse, ItemDetailsResponse } from '../domain/search.model';
 
 @Injectable({

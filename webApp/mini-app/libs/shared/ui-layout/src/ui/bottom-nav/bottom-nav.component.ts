@@ -1,11 +1,10 @@
 import { Component, signal, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { NgClass } from '@angular/common';
 import { NAV_ITEMS } from '../../domain/navigation.constants';
 
 @Component({
   selector: 'wh-bottom-nav',
-  imports: [RouterLink, RouterLinkActive, NgClass],
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './bottom-nav.component.html',
   styleUrl: './bottom-nav.component.css',
 })

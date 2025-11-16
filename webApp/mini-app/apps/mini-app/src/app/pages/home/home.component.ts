@@ -21,7 +21,7 @@ import { Component } from '@angular/core';
             خوش آمدید
           </h1>
           <p class="text-gray-600">
-            به سیستم مدیریت انبار سیفارکو
+            به سیستم مدیریت انبار بازار دقیق
           </p>
         </div>
 
