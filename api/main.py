@@ -54,11 +54,11 @@ def read_root():
         "version": "1.0.0",
         "status": "running",
         "endpoints": {
-            "items": "/api/items",
-            "categories": "/api/categories",
-            "brands": "/api/brands",
-            "low_stock": "/api/low-stock",
-            "stats": "/api/stats"
+            "items": "/items",
+            "categories": "/categories",
+            "brands": "/brands",
+            "low_stock": "/low-stock",
+            "stats": "/stats"
         }
     }
 
@@ -76,7 +76,7 @@ def health_check():
 # Statistics
 # ============================================================================
 
-@app.get("/api/stats", response_model=StatsResponse)
+@app.get("/stats", response_model=StatsResponse)
 def get_stats():
     """Get warehouse statistics."""
     try:
@@ -98,7 +98,7 @@ def get_stats():
 # Items
 # ============================================================================
 
-@app.get("/api/items")
+@app.get("/items")
 def get_items(
     limit: Optional[int] = Query(100, ge=1, le=1000),
     offset: Optional[int] = Query(0, ge=0)
@@ -135,7 +135,7 @@ def get_items(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/api/items/search")
+@app.get("/items/search")
 def search_items(q: str = Query(..., min_length=1)):
     """Search items by name, custom_code, or description."""
     try:
@@ -166,7 +166,7 @@ def search_items(q: str = Query(..., min_length=1)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/api/items/{item_id}")
+@app.get("/items/{item_id}")
 def get_item(item_id: int):
     """Get item by ID with full details."""
     try:
@@ -209,7 +209,7 @@ def get_item(item_id: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.patch("/api/items/{item_id}/stock")
+@app.patch("/items/{item_id}/stock")
 def update_item_stock(item_id: int, update: ItemUpdate):
     """Update item stock/available count."""
     try:
@@ -245,7 +245,7 @@ def update_item_stock(item_id: int, update: ItemUpdate):
 # Low Stock Items
 # ============================================================================
 
-@app.get("/api/low-stock")
+@app.get("/low-stock")
 def get_low_stock_items():
     """Get items below low stock threshold."""
     try:
@@ -279,7 +279,7 @@ def get_low_stock_items():
 # Categories
 # ============================================================================
 
-@app.get("/api/categories")
+@app.get("/categories")
 def get_categories():
     """Get all categories."""
     try:
@@ -300,7 +300,7 @@ def get_categories():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/api/categories/{category_id}/subcategories")
+@app.get("/categories/{category_id}/subcategories")
 def get_subcategories(category_id: int):
     """Get subcategories for a specific category."""
     try:
@@ -326,7 +326,7 @@ def get_subcategories(category_id: int):
 # Brands
 # ============================================================================
 
-@app.get("/api/brands")
+@app.get("/brands")
 def get_brands():
     """Get all brands."""
     try:
@@ -347,7 +347,7 @@ def get_brands():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/api/brands/{brand_id}/items")
+@app.get("/brands/{brand_id}/items")
 def get_brand_items(brand_id: int):
     """Get all items for a specific brand."""
     try:
@@ -375,7 +375,7 @@ def get_brand_items(brand_id: int):
 # Measure Types
 # ============================================================================
 
-@app.get("/api/measure-types")
+@app.get("/measure-types")
 def get_measure_types():
     """Get all measure types."""
     try:
